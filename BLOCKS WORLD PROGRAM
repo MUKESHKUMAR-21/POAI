@@ -1,0 +1,77 @@
+# Class representing the state of the blocks world
+class BlocksWorld:
+    def __init__(self, num_blocks):
+        # Initialize blocks world with each block on its own stack (on the table)
+        self.state = [[block] for block in range(num_blocks)]
+        self.num_blocks = num_blocks
+
+    def display_state(self):
+        # Display the current state of the blocks world
+        print("Current state:")
+        for i, stack in enumerate(self.state):
+            print(f" Stack {i}: {stack}")
+        print("-" * 30)
+
+    def move(self, block, destination):
+        # Move a block onto another block or onto the stack containing that block
+        source_stack = self.find_block(block)
+        destination_stack = self.find_block(destination)
+
+        if source_stack is None or destination_stack is None:
+            print(f"Invalid move: Block {block} or destination {destination} does not exist.")
+            return
+
+        if block == destination:
+            print(f"Invalid move: Cannot move block {block} onto itself.")
+            return
+
+        # Only allow moving top blocks
+        if source_stack[-1] != block:
+            print(f"Invalid move: Block {block} is not at the top of its stack.")
+            return
+
+        # Perform the move
+        source_stack.pop()
+        destination_stack.append(block)
+
+        print(f"Moved block {block} onto block {destination}.")
+        self.display_state()
+
+    def find_block(self, block):
+        # Find and return the stack that contains the block
+        for stack in self.state:
+            if block in stack:
+                return stack
+        return None
+
+    def goal_state(self, goal):
+        # Set a goal state (overwrite the current state)
+        self.state = [list(stack) for stack in goal]
+        print("Goal state set:")
+        self.display_state()
+
+# Main program to demonstrate the Blocks World
+def main():
+    blocks_world = BlocksWorld(3)
+
+    print("Initial state:")
+    blocks_world.display_state()
+
+    # Define the goal state: block 0 on 1, and block 2 alone
+    goal = [[1, 0], [2]]
+    blocks_world.goal_state(goal)
+
+    print("Performing Moves:")
+
+    # Move block 0 onto block 2
+    blocks_world.move(0, 2)
+
+    # Move block 1 onto block 2
+    blocks_world.move(1, 2)
+
+    # Move block 2 onto the block 0 (invalid — just for testing)
+    blocks_world.move(2, 0)
+
+# Run the main program
+if __name__ == "__main__":
+    main()
