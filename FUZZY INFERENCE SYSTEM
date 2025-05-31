@@ -1,0 +1,64 @@
+import numpy as np
+import skfuzzy as fuzz
+import matplotlib.pyplot as plt
+
+# Step 1: Define the fuzzy variables (input: temperature, output: fan speed)
+temperature = np.arange(0, 41, 1)   # 0 to 40 °C
+fan_speed = np.arange(0, 11, 1)     # 0 to 10
+
+# Step 2: Define fuzzy membership functions for Temperature
+temp_low = fuzz.trimf(temperature, [0, 0, 20])
+temp_medium = fuzz.trimf(temperature, [10, 20, 30])
+temp_high = fuzz.trimf(temperature, [20, 30, 40])
+
+# Define fuzzy membership functions for Fan Speed
+fan_low = fuzz.trimf(fan_speed, [0, 0, 5])
+fan_medium = fuzz.trimf(fan_speed, [2, 5, 8])
+fan_high = fuzz.trimf(fan_speed, [5, 10, 10])
+
+# Step 3: Visualize membership functions
+plt.figure(figsize=(10, 6))
+
+plt.subplot(2, 1, 1)
+plt.plot(temperature, temp_low, label='Low')
+plt.plot(temperature, temp_medium, label='Medium')
+plt.plot(temperature, temp_high, label='High')
+plt.title("Temperature Membership Functions")
+plt.xlabel("Temperature (°C)")
+plt.ylabel("Membership Degree")
+plt.legend()
+
+plt.subplot(2, 1, 2)
+plt.plot(fan_speed, fan_low, label='Low')
+plt.plot(fan_speed, fan_medium, label='Medium')
+plt.plot(fan_speed, fan_high, label='High')
+plt.title("Fan Speed Membership Functions")
+plt.xlabel("Fan Speed")
+plt.ylabel("Membership Degree")
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+# Step 4: Fuzzification
+temperature_input = 28  # Example temperature
+temp_level_low = fuzz.interp_membership(temperature, temp_low, temperature_input)
+temp_level_medium = fuzz.interp_membership(temperature, temp_medium, temperature_input)
+temp_level_high = fuzz.interp_membership(temperature, temp_high, temperature_input)
+
+# Step 5: Apply fuzzy rules
+# Rule 1: IF temperature is low THEN fan speed is low
+# Rule 2: IF temperature is medium THEN fan speed is medium
+# Rule 3: IF temperature is high THEN fan speed is high
+rule1 = np.fmin(temp_level_low, fan_low)
+rule2 = np.fmin(temp_level_medium, fan_medium)
+rule3 = np.fmin(temp_level_high, fan_high)
+
+# Step 6: Aggregate outputs and defuzzify
+aggregated = np.fmax(rule1, np.fmax(rule2, rule3))
+fan_output = fuzz.defuzz(fan_speed, aggregated, 'centroid')
+
+# Step 7: Print Results
+print(f"Input Temperature: {temperature_input}°C")
+print(f"Membership Levels => Low: {temp_level_low:.2f}, Medium: {temp_level_medium:.2f}, High: {temp_level_high:.2f}")
+print(f"Defuzzified Fan Speed Output: {fan_output:.2f}")
