@@ -1,0 +1,18 @@
+% Facts:
+likes(mary, food).
+likes(mary, wine).
+likes(john, wine).
+likes(john, mary).
+
+% Rules:
+% Rule 1: John likes anything that Mary likes
+likes(john, X) :- 
+    likes(mary, X).
+
+% Rule 2: John likes anyone who likes wine
+likes(john, Y) :- 
+    likes(Y, wine).
+
+% Rule 3: John likes anyone who likes themselves
+likes(john, Y) :- 
+    likes(Y, Y).
