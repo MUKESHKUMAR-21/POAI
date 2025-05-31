@@ -1,0 +1,39 @@
+# Facts: A dictionary representing the knowledge base of known truths
+facts = {
+    'a': True,
+    'b': True,
+    'c': False
+}
+
+# Rules: Each rule is a tuple (conclusion, [conditions])
+rules = [
+    ('d', ['a', 'b']),   # d is true if a and b are true
+    ('e', ['b', 'c']),   # e is true if b and c are true
+    ('f', ['d', 'e'])    # f is true if d and e are true
+]
+
+# Backward Chaining Algorithm
+def backward_chaining(goal, facts, rules):
+    # Base case: If the goal is directly in the facts
+    if goal in facts:
+        return facts[goal]
+    
+    # Try to infer the goal from the rules
+    for head, body in rules:
+        if head == goal:
+            # Recursively check if all conditions in the rule body are true
+            if all(backward_chaining(subgoal, facts, rules) for subgoal in body):
+                return True
+    
+    # If the goal cannot be inferred
+    return False
+
+# -----------------------
+# Example: Try to infer 'f'
+# -----------------------
+goal = 'f'
+
+if backward_chaining(goal, facts, rules):
+    print(f"The goal '{goal}' can be achieved.")
+else:
+    print(f"The goal '{goal}' cannot be achieved.")
